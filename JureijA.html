@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Jureij Academy | Admin & Student Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .title-bar {
+            background: #D4A017;
+            color: #1e2a3a;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .login-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-login {
+            background: #1e2a3a;
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-login:hover {
+            background: #000000cc;
+            transform: scale(0.97);
+        }
+        .admin-badge {
+            background: #2c3e2f;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #e9f5e9;
+        }
+        .site-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .menu-bar {
+            background: #0B2B4B;
+            padding: 0.8rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px 22px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .menu-btn:hover, .menu-btn.active {
+            background: #FFD966;
+            color: #0B2B4B;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .card-3d {
+            border-radius: 28px;
+            padding: 1.5rem;
+            transition: all 0.25s ease;
+            box-shadow: 12px 12px 20px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255,255,255,0.4);
+            backdrop-filter: blur(2px);
+            position: relative;
+            border: 1px solid rgba(255,255,240,0.3);
+        }
+        .card-3d:hover {
+            transform: translateY(-6px);
+            box-shadow: 16px 20px 28px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        .edit-icon {
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .edit-icon:hover {
+            background: rgba(0,0,0,0.5);
+            color: white;
+        }
+        .card-student { background: #F39C12; color: #2c1a00; }
+        .card-result { background: #1E1E1E; color: #f0f0f0; }
+        .card-school { background: #C0392B; color: #fff2e6; }
+        .card-announce { background: #6C3483; color: #f5eef8; }
+
+        .result-search {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .result-search input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 60px;
+            border: none;
+            outline: none;
+            background: #fef9e8;
+        }
+        .result-search button {
+            background: #ffc107;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .result-display {
+            background: #2d2d2d;
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .page-section {
+            display: none;
+            animation: fade 0.3s;
+        }
+        .active-section {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .profile-grid, .announce-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .student-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem;
+            width: 240px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 3px solid #F39C12;
+        }
+        .admin-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button.small-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .school-content {
+            background: #fff2e0;
+            padding: 1.5rem;
+            border-radius: 28px;
+        }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 32px;
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 18px;
+            border: 1px solid #ccc;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #111;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="title-bar">
+    <div class="login-area">
+        <button id="loginBtn" class="btn-login">🔐 Log in</button>
+        <span id="adminStatusSpan" class="admin-badge hidden"></span>
+    </div>
+    <div class="site-title">📘 Jureij Academy</div>
+    <div style="width: 80px;"></div>
+</div>
+
+<div class="menu-bar">
+    <button class="menu-btn" data-page="home">🏠 Home</button>
+    <button class="menu-btn" data-page="students">👩‍🎓 Students Profile</button>
+    <button class="menu-btn" data-page="resultsPortal">📊 Results Portal</button>
+    <button class="menu-btn" data-page="about">🏫 School About</button>
+    <button class="menu-btn" data-page="announcementsPage">📢 Announcements</button>
+</div>
+
+<main class="container">
+    <div id="homeSection" class="page-section active-section">
+        <div class="cards-grid">
+            <div class="card-3d card-student" id="studentProfileCard">
+                <div class="card-header">
+                    <span>📁 Student Profiles</span>
+                    <span class="edit-icon" data-card="student">✏️</span>
+                </div>
+                <div id="studentCardContent">
+                    <!-- content filled dynamically -->
+                </div>
+            </div>
+            <div class="card-3d card-result" id="resultsCard">
+                <div class="card-header">
+                    <span>📈 Check Results</span>
+                    <span class="edit-icon" data-card="result">✏️</span>
+                </div>
+                <div class="result-search">
+                    <input type="text" id="resultSearchInput" placeholder="Roll No or Name ...">
+                    <button id="searchResultBtn">🔍 Search</button>
+                </div>
+                <div id="resultLiveDisplay" class="result-display">
+                    <p style="color:#ffd966;">✨ Enter Roll No or Name ✨</p>
+                </div>
+            </div>
+            <div class="card-3d card-school" id="schoolInfoCard">
+                <div class="card-header">
+                    <span>🏛️ About Academy</span>
+                    <span class="edit-icon" data-card="school">✏️</span>
+                </div>
+                <div id="schoolCardContent">
+                    <p>Loading school info...</p>
+                </div>
+            </div>
+            <div class="card-3d card-announce" id="announceCard">
+                <div class="card-header">
+                    <span>📢 Latest Announcement</span>
+                    <span class="edit-icon" data-card="announce">✏️</span>
+                </div>
+                <div id="announceCardContent">
+                    <img id="announcePreviewImg" style="width:100%; border-radius: 20px; max-height: 150px; object-fit: cover;" alt="announcement">
+                    <p id="announceCaption" style="margin-top: 8px;">📌 School updates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="studentsPage" class="page-section">
+        <h2>👥 All Students Profiles</h2>
+        <div id="studentsListContainer" class="profile-grid"></div>
+        <div id="adminStudentControls" class="hidden" style="margin-top: 30px;">
+            <button id="addStudentBtn" class="btn-login" style="background:#F39C12;">➕ Add New Student</button>
+        </div>
+    </div>
+
+    <div id="resultsPortalPage" class="page-section">
+        <h2>📋 Results Portal (Search by Roll/Name)</h2>
+        <div class="result-search" style="background: #eee; padding: 15px; border-radius: 48px;">
+            <input type="text" id="portalSearchInput" placeholder="Roll No or Full Name">
+            <button id="portalSearchBtn">Get Result</button>
+        </div>
+        <div id="portalResultArea" style="background:#1e1e1e; color:white; border-radius: 28px; padding: 20px; margin-top: 20px;"></div>
+        <div id="adminResultControls" class="hidden"><hr><h3>⚙️ Admin: Manage Marks</h3><button id="bulkMarksBtn" class="small-btn">✏️ Edit Student Marks</button></div>
+    </div>
+
+    <div id="aboutPage" class="page-section">
+        <h2>🏫 About Jureij Academy</h2>
+        <div id="schoolAboutDisplay" class="school-content"></div>
+        <div id="adminAboutEdit" class="hidden"><button id="editSchoolInfoBtn" class="btn-login" style="margin-top: 20px;">✏️ Edit School Info</button></div>
+    </div>
+
+    <div id="announcementsPageSection" class="page-section">
+        <h2>📢 All Announcements (JPEG Images)</h2>
+        <div id="announcementsGallery" class="announce-grid"></div>
+        <div id="adminAnnounceControls" class="hidden"><button id="uploadAnnounceBtn" class="btn-login">📸 Upload New JPEG Announcement</button></div>
+    </div>
+</main>
+<footer>© Jureij Academy — Knowledge & Excellence</footer>
+
+<script>
+    // ---------- DATA MODELS ----------
+    let students = [];
+    let schoolInfo = { description: "Jureij Academy is committed to academic excellence, character building, and modern education. We offer science, arts, and islamic studies with state-of-the-art facilities.", address: "Kabul, Afghanistan", email: "info@jureij.edu" };
+    let announcements = [];
+    
+    let isAdmin = false;
+    const STORAGE_KEYS = { students: 'jureij_students', school: 'jureij_school', announcements: 'jureij_announcements' };
+    const subjectsList = ["Biology","Chemistry","Physics","Maths","Pashto","Dari","Quran","Geography","History"];
+
+    function loadData() {
+        const storedStudents = localStorage.getItem(STORAGE_KEYS.students);
+        if(storedStudents) students = JSON.parse(storedStudents);
+        else {
+            students = [
+                { id: "s1", rollNo: "2024001", name: "Ahmed Raza", photo: "https://placehold.co/200x200?text=Student+JPEG", marks: { Biology:85, Chemistry:78, Physics:88, Maths:92, Pashto:80, Dari:75, Quran:95, Geography:82, History:79 } },
+                { id: "s2", rollNo: "2024002", name: "Fatima Noori", photo: "https://placehold.co/200x200?text=Student+JPEG", marks: { Biology:91, Chemistry:88, Physics:84, Maths:96, Pashto:89, Dari:91, Quran:98, Geography:85, History:90 } },
+                { id: "s3", rollNo: "2024003", name: "Omar Khan", photo: "https://placehold.co/200x200?text=Student+JPEG", marks: { Biology:72, Chemistry:68, Physics:75, Maths:70, Pashto:88, Dari:82, Quran:92, Geography:74, History:69 } }
+            ];
+        }
+        const storedSchool = localStorage.getItem(STORAGE_KEYS.school);
+        if(storedSchool) schoolInfo = JSON.parse(storedSchool);
+        const storedAnn = localStorage.getItem(STORAGE_KEYS.announcements);
+        if(storedAnn) announcements = JSON.parse(storedAnn);
+        else {
+            announcements = [{ id: "ann1", imageDataURL: "https://placehold.co/600x300?text=JPEG+Announcement", caption: "Summer break starts June 20th", date: "2025-05-10" }];
+        }
+        saveAllToLocal();
+    }
+    
+    function saveAllToLocal() {
+        localStorage.setItem(STORAGE_KEYS.students, JSON.stringify(students));
+        localStorage.setItem(STORAGE_KEYS.school, JSON.stringify(schoolInfo));
+        localStorage.setItem(STORAGE_KEYS.announcements, JSON.stringify(announcements));
+    }
+
+    // ---------- FIXED: update student card without duplication ----------
+    function updateStudentCount() {
+        const container = document.getElementById('studentCardContent');
+        const lastStudent = students.length ? students[students.length-1] : null;
+        container.innerHTML = `
+            <p>📌 Total Enrolled: <span id="totalStudentsCount">${students.length}</span></p>
+            <p>🖼️ Latest profiles ready</p>
+            ${lastStudent ? `<p><small>✔️ Last: ${lastStudent.name} (${lastStudent.rollNo})</small></p>` : '<p><small>No students yet</small></p>'}
+            <p><small>Click 'Students Profile' menu to view all</small></p>
+        `;
+    }
+
+    function updateSchoolCardAndPage() {
+        document.getElementById('schoolCardContent').innerHTML = `<p><strong>🏫 ${schoolInfo.description.substring(0,80)}...</strong></p><p>📍 ${schoolInfo.address}</p>`;
+        document.getElementById('schoolAboutDisplay').innerHTML = `<h3>${schoolInfo.description}</h3><p><strong>Address:</strong> ${schoolInfo.address}</p><p><strong>Email:</strong> ${schoolInfo.email || 'contact@jureij.edu'}</p>`;
+    }
+    
+    function updateAnnouncementCardAndGallery() {
+        const latest = announcements.length ? announcements[announcements.length-1] : null;
+        const imgElement = document.getElementById('announcePreviewImg');
+        const capElement = document.getElementById('announceCaption');
+        if(latest) {
+            imgElement.src = latest.imageDataURL;
+            capElement.innerText = latest.caption || "📢 New Announcement";
+        } else {
+            imgElement.src = "https://placehold.co/400x200?text=No+JPEG";
+            capElement.innerText = "No announcements yet";
+        }
+        const galleryDiv = document.getElementById('announcementsGallery');
+        if(galleryDiv) {
+            galleryDiv.innerHTML = announcements.map(ann => `<div style="background:#fff; border-radius:24px; padding:12px; width:260px;"><img src="${ann.imageDataURL}" style="width:100%; border-radius:20px; height:150px; object-fit:cover;"><p><strong>${ann.caption || 'Notice'}</strong><br><small>${ann.date || ''}</small></p></div>`).join('');
+            if(announcements.length===0) galleryDiv.innerHTML = '<p>No JPEG announcements uploaded.</p>';
+        }
+    }
+
+    function renderStudentsListPage() {
+        const container = document.getElementById('studentsListContainer');
+        if(!container) return;
+        container.innerHTML = students.map(s => `
+            <div class="student-card">
+                <img src="${s.photo}" class="student-photo" onerror="this.src='https://placehold.co/100x100?text=JPEG'">
+                <h3>${escapeHtml(s.name)}</h3>
+                <p>Roll: ${escapeHtml(s.rollNo)}</p>
+                <p>Subjects: ${Object.values(s.marks).join(', ')}</p>
+                ${isAdmin ? `<div class="admin-actions"><button class="small-btn edit-student" data-id="${s.id}">✏️ Edit</button><button class="small-btn del-student" data-id="${s.id}">🗑️ Delete</button></div>` : ''}
+            </div>
+        `).join('');
+        if(isAdmin) {
+            document.querySelectorAll('.edit-student').forEach(btn => btn.addEventListener('click', (e) => { const sid = btn.dataset.id; openStudentEditModal(sid); }));
+            document.querySelectorAll('.del-student').forEach(btn => btn.addEventListener('click', (e) => { const sid = btn.dataset.id; if(confirm('Delete student?')) { students = students.filter(s => s.id !== sid); saveAllToLocal(); updateUI(); renderStudentsListPage(); } }));
+        }
+    }
+
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    function showAdminElements(show) {
+        const adminControls = ['adminStudentControls', 'adminResultControls', 'adminAboutEdit', 'adminAnnounceControls'];
+        adminControls.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !show); });
+        document.getElementById('adminStatusSpan')?.classList.toggle('hidden', !show);
+        if(show) document.getElementById('adminStatusSpan').innerHTML = '👑 Admin Mode Active';
+    }
+
+    function displayResult(searchTerm, targetDiv) {
+        if(!searchTerm) { targetDiv.innerHTML = '<p>🔍 Type Roll No or Name</p>'; return; }
+        const student = students.find(s => s.rollNo.toLowerCase() === searchTerm.toLowerCase() || s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        if(!student) { targetDiv.innerHTML = '<p style="color:#ffaa66;">❌ No student found with that Roll No/Name.</p>'; return; }
+        let marksHtml = `<div class="subject-grid">${subjectsList.map(sub => `<div><strong>${sub}:</strong> ${student.marks[sub] ?? 0}</div>`).join('')}</div>`;
+        targetDiv.innerHTML = `<h4>📌 ${student.name} (Roll: ${student.rollNo})</h4>${marksHtml}<hr><small>✨ Result declared by Academy</small>`;
+    }
+
+    // ---------- FIXED: robust edit modal with proper save ----------
+    function openStudentEditModal(studentId) {
+        const stu = students.find(s => s.id === studentId);
+        if(!stu) { alert("Student not found"); return; }
+        const modalDiv = document.createElement('div'); modalDiv.className = 'modal';
+        let marksFields = subjectsList.map(sub => `<div class="form-group"><label>${sub}</label><input type="number" id="mark_${sub}" value="${stu.marks[sub] || 0}"></div>`).join('');
+        modalDiv.innerHTML = `
+            <div class="modal-content">
+                <h2>✏️ Edit Student: ${stu.name}</h2>
+                <div class="form-group"><label>Full Name</label><input id="editName" value="${escapeHtml(stu.name)}"></div>
+                <div class="form-group"><label>Roll No</label><input id="editRoll" value="${escapeHtml(stu.rollNo)}"></div>
+                <div class="form-group"><label>Photo JPEG URL (or upload)</label><input id="editPhoto" value="${stu.photo}"><input type="file" accept="image/jpeg" id="photoUploadJpeg" style="margin-top:6px;"></div>
+                <h3>📊 Marks</h3>${marksFields}
+                <div style="display:flex; gap:10px; margin-top:20px;"><button id="saveStudentBtn" style="background:#2c3e50; color:white; padding:8px 16px; border-radius:40px; border:none; cursor:pointer;">💾 Save Changes</button><button id="closeModalBtn" style="background:#aaa; color:white; padding:8px 16px; border-radius:40px; border:none; cursor:pointer;">Cancel</button></div>
+            </div>`;
+        document.body.appendChild(modalDiv);
+        
+        const fileInput = modalDiv.querySelector('#photoUploadJpeg');
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = ev => modalDiv.querySelector('#editPhoto').value = ev.target.result;
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        
+        modalDiv.querySelector('#saveStudentBtn').onclick = () => {
+            // update student data
+            stu.name = modalDiv.querySelector('#editName').value.trim() || "Unnamed";
+            stu.rollNo = modalDiv.querySelector('#editRoll').value.trim() || "NO-ROLL";
+            stu.photo = modalDiv.querySelector('#editPhoto').value || stu.photo;
+            subjectsList.forEach(sub => {
+                let val = parseInt(modalDiv.querySelector(`#mark_${sub}`).value);
+                stu.marks[sub] = isNaN(val) ? 0 : val;
+            });
+            saveAllToLocal();
+            updateUI();
+            renderStudentsListPage();
+            modalDiv.remove();
+            alert("Student data saved successfully!");
+        };
+        modalDiv.querySelector('#closeModalBtn').onclick = () => modalDiv.remove();
+    }
+
+    function openSchoolEditModal() {
+        const modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content"><h2>Edit School Info</h2><div class="form-group"><label>Description</label><textarea id="schoolDesc">${schoolInfo.description}</textarea></div><div class="form-group"><label>Address</label><input id="schoolAddr" value="${schoolInfo.address}"></div><div class="form-group"><label>Email</label><input id="schoolEmail" value="${schoolInfo.email || ''}"></div><button id="saveSchoolBtn" style="background:#2c3e50; color:white; padding:8px 16px; border-radius:40px; border:none;">Save Changes</button><button id="cancelSchoolBtn">Cancel</button></div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('#saveSchoolBtn').onclick = () => {
+            schoolInfo.description = modal.querySelector('#schoolDesc').value;
+            schoolInfo.address = modal.querySelector('#schoolAddr').value;
+            schoolInfo.email = modal.querySelector('#schoolEmail').value;
+            saveAllToLocal(); updateSchoolCardAndPage(); modal.remove();
+        };
+        modal.querySelector('#cancelSchoolBtn').onclick = () => modal.remove();
+    }
+
+    function openAnnouncementUploadModal() {
+        const modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content"><h2>Upload JPEG Announcement</h2><div class="form-group"><label>Caption (Optional)</label><input id="annCaption" placeholder="Event/News"></div><div class="form-group"><label>JPEG Image</label><input type="file" accept="image/jpeg" id="annImageFile"></div><div id="previewImg" style="margin:8px 0;"></div><button id="uploadAnnSave">Upload</button><button id="cancelAnn">Cancel</button></div>`;
+        document.body.appendChild(modal);
+        const fileInput = modal.querySelector('#annImageFile');
+        const preview = modal.querySelector('#previewImg');
+        fileInput.addEventListener('change', e => {
+            if(e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = ev => preview.innerHTML = `<img src="${ev.target.result}" style="max-width:100%; border-radius:16px;">`;
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        modal.querySelector('#uploadAnnSave').onclick = () => {
+            const file = fileInput.files[0];
+            if(!file) { alert('Please select a JPEG image'); return; }
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const newAnn = { id: Date.now().toString(), imageDataURL: ev.target.result, caption: modal.querySelector('#annCaption').value || "New Announcement", date: new Date().toLocaleDateString() };
+                announcements.push(newAnn);
+                saveAllToLocal(); updateAnnouncementCardAndGallery(); modal.remove();
+            };
+            reader.readAsDataURL(file);
+        };
+        modal.querySelector('#cancelAnn').onclick = () => modal.remove();
+    }
+
+    function openManageMarksModal() {
+        const modal = document.createElement('div'); modal.className = 'modal';
+        let studentsSelect = `<select id="marksStudentSelect">${students.map(s => `<option value="${s.id}">${s.name} (${s.rollNo})</option>`).join('')}</select>`;
+        modal.innerHTML = `<div class="modal-content"><h2>Manage Student Marks</h2><div class="form-group"><label>Select Student</label>${studentsSelect}</div><div id="dynamicMarksFields"></div><button id="saveMarksBtn">Update Marks</button><button id="closeMarksBtn">Close</button></div>`;
+        document.body.appendChild(modal);
+        function loadMarksForStudent(studentId) {
+            const stu = students.find(s => s.id === studentId);
+            if(!stu) return;
+            let fieldsHtml = subjectsList.map(sub => `<div class="form-group"><label>${sub}</label><input type="number" id="mark_edit_${sub}" value="${stu.marks[sub] || 0}"></div>`).join('');
+            document.getElementById('dynamicMarksFields').innerHTML = fieldsHtml;
+        }
+        const selectEl = modal.querySelector('#marksStudentSelect');
+        loadMarksForStudent(selectEl.value);
+        selectEl.addEventListener('change', () => loadMarksForStudent(selectEl.value));
+        modal.querySelector('#saveMarksBtn').onclick = () => {
+            const stuId = selectEl.value;
+            const student = students.find(s => s.id === stuId);
+            subjectsList.forEach(sub => { student.marks[sub] = parseInt(document.getElementById(`mark_edit_${sub}`).value) || 0; });
+            saveAllToLocal(); updateUI(); renderStudentsListPage();
+            alert('Marks updated!');
+            modal.remove();
+        };
+        modal.querySelector('#closeMarksBtn').onclick = () => modal.remove();
+    }
+
+    function handleLogin() {
+        const pwd = prompt("🔐 Admin Login\nEnter password:", "");
+        if(pwd === "admin123") {
+            isAdmin = true;
+            updateUI();
+            alert("Admin access granted. Edit icons & admin controls visible.");
+        } else alert("Wrong password! Access denied.");
+    }
+    function logout() { isAdmin = false; updateUI(); alert("Logged out from admin."); }
+
+    function updateUI() {
+        updateStudentCount();
+        updateSchoolCardAndPage();
+        updateAnnouncementCardAndGallery();
+        renderStudentsListPage();
+        showAdminElements(isAdmin);
+    }
+
+    // Event listeners
+    document.getElementById('loginBtn').addEventListener('click', () => { if(isAdmin) logout(); else handleLogin(); });
+    
+    // Edit icons: student card now opens the Students page (easier management)
+    document.querySelectorAll('.edit-icon').forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            if(!isAdmin) { alert("Only Admin can edit! Log in first."); return; }
+            const cardType = icon.dataset.card;
+            if(cardType === 'student') {
+                // navigate to students page
+                document.querySelector('.menu-btn[data-page="students"]').click();
+            } else if(cardType === 'result') openManageMarksModal();
+            else if(cardType === 'school') openSchoolEditModal();
+            else if(cardType === 'announce') openAnnouncementUploadModal();
+        });
+    });
+
+    document.getElementById('searchResultBtn').addEventListener('click', () => {
+        displayResult(document.getElementById('resultSearchInput').value, document.getElementById('resultLiveDisplay'));
+    });
+    document.getElementById('portalSearchBtn').addEventListener('click', () => {
+        displayResult(document.getElementById('portalSearchInput').value, document.getElementById('portalResultArea'));
+    });
+    
+    document.getElementById('addStudentBtn')?.addEventListener('click', () => {
+        const newId = Date.now().toString();
+        const defaultMarks = {};
+        subjectsList.forEach(s => defaultMarks[s] = 75);
+        const newStudent = { id: newId, rollNo: "NEW", name: "New Student", photo: "https://placehold.co/200x200?text=JPEG", marks: defaultMarks };
+        students.push(newStudent);
+        saveAllToLocal();
+        updateUI();
+        renderStudentsListPage();
+        openStudentEditModal(newId);
+    });
+    document.getElementById('bulkMarksBtn')?.addEventListener('click', openManageMarksModal);
+    document.getElementById('editSchoolInfoBtn')?.addEventListener('click', openSchoolEditModal);
+    document.getElementById('uploadAnnounceBtn')?.addEventListener('click', openAnnouncementUploadModal);
+
+    const sections = { home: 'homeSection', students: 'studentsPage', resultsPortal: 'resultsPortalPage', about: 'aboutPage', announcementsPage: 'announcementsPageSection' };
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const page = btn.dataset.page;
+            Object.values(sections).forEach(secId => document.getElementById(secId).classList.remove('active-section'));
+            document.getElementById(sections[page]).classList.add('active-section');
+            if(page === 'students') renderStudentsListPage();
+            if(page === 'about') updateSchoolCardAndPage();
+            if(page === 'announcementsPage') updateAnnouncementCardAndGallery();
+        });
+    });
+
+    loadData();
+    updateUI();
+    document.getElementById('resultLiveDisplay').innerHTML = '<p>✨ Search by Roll No or Name ✨</p>';
+</script>
+</body>
+</html>
